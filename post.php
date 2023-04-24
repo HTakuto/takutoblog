@@ -9,8 +9,8 @@
 
   if (!empty($_POST['title']) && !empty($_POST['body'])){
     // titleとbodyがPOSTメソッドで送信されたとき
-    $title = $_POST['title'];
-    $body = $_POST['body'];
+    $title = htmlspecialchars($_POST['title'], ENT_QUOTES, "UTF-8");
+    $body = htmlspecialchars($_POST['body'], ENT_QUOTES, "UTF-8");
     $db = new connect();
     $sql = "INSERT INTO articles (title, body, created_at, updated_at)
             VALUES (:title, :body, NOW(), NOW())";
@@ -20,13 +20,13 @@
     // POSTメソッドで送信されたが、titleかbodyが足りないとき
     // 存在するほうは変数へ、ない場合空文字にしてフォームのvalueに設定する
     if (!empty($_POST['title'])){
-      $title = $_POST['title'];
+      $title = htmlspecialchars($_POST['title'], ENT_QUOTES, "UTF-8");
     } else {
       $title_alert = "タイトルを入力してください。";
     }
 
     if (!empty($_POST['body'])){
-      $body = $_POST['body'];
+      $body = htmlspecialchars($_POST['body'], ENT_QUOTES, "UTF-8");
     } else {
       $body_alert = "本文を入力してください。";
     }
@@ -37,7 +37,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TakutoBlog</title>
+    <title>Takuto Blog</title>
 
     <!-- Bootstrap core CSS -->
     <link href="./css/bootstrap.min.css" rel="stylesheet">
