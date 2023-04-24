@@ -55,22 +55,22 @@
   </head>
   <body class="text-center">
     
-<main class="form-signin">
-  <form action="login.php" method="post">
-    <h1 class="h3 mb-3 fw-normal">ログインする</h1>
-    <?php
-      if (!is_null($err)){
-        echo '<div class="alert alert-danger">'.$err.'</div>';
-      }
-    ?>
-    <label class="visually-hidden">ユーザ名</label>
-    <input type="text" name="name" class="form-control" placeholder="ユーザ名" required autofocus>
-    <label class="visually-hidden">パスワード</label>
-    <input type="password" name="password" class="form-control" placeholder="パスワード" required>
-    <button class="w-100 btn btn-lg btn-primary" type="submit">ログインする</button>
-    <p class="mt-5 mb-3 text-muted">&copy; 2023</p>
-  </form>
-</main>
+  <main class="form-signin">
+    <form action="login.php" method="post">
+      <h1 class="h3 mb-3 fw-normal">ログインする</h1>
+      <?php
+        if (!is_null($err)){
+          echo '<div class="alert alert-danger">'.$err.'</div>';
+        }
+      ?>
+      <label class="visually-hidden">ユーザ名</label>
+      <input type="text" name="name" class="form-control" placeholder="ユーザ名" required autofocus>
+      <label class="visually-hidden">パスワード</label>
+      <input type="password" name="password" class="form-control" placeholder="パスワード" required>
+      <button class="w-100 btn btn-lg btn-primary" type="submit">ログインする</button>
+      <p class="mt-5 mb-3 text-muted">&copy; 2023</p>
+    </form>
+  </main>
     
   </body>
 </html>
