@@ -5,7 +5,7 @@ class connect{
   const USER = "takuto";
   const PASS = "Honda5157";
 
-  private $dbh;
+  protected $dbh;
 
   public function __construct(){
     $dsn = "mysql:host=".self::HOST.";dbname=".self::DB_NAME.";charset=utf8mb4";
