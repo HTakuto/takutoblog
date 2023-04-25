@@ -85,10 +85,7 @@ class QueryArticle extends connect{
       // 新しいファイルがアップロードされたとき
       if ($file = $this->article->getFile()){
         // ファイルが既にある場合、古いファイルを削除する
-        if ($this->article->getFilename()){
-          unlink(__DIR__.'/../album/thumbs-'.$this->article->getFilename());
-          unlink(__DIR__.'/../album/'.$this->article->getFilename());
-        }   
+        $this->deleteFile();
         // 新しいファイルのアップロード
         $this->article->setFilename($this->saveFile($file['tmp_name']));
         $filename = $this->article->getFilename();
@@ -113,11 +110,20 @@ class QueryArticle extends connect{
       $stmt->bindParam(':body', $body, PDO::PARAM_STR);
       $stmt->bindParam(':filename', $filename, PDO::PARAM_STR);
       $stmt->execute();
-    }   
+    }
+  }
+
+  private function deleteFile(){
+    if ($this->article->getFilename()){
+      unlink(__DIR__.'/../album/thumbs-'.$this->article->getFilename());
+      unlink(__DIR__.'/../album/'.$this->article->getFilename());
+    }
   }
 
   public function delete(){
     if ($this->article->getId()){
+      // 画像の削除
+      $this->deleteFile();
       $id = $this->article->getId();
       $stmt = $this->dbh->prepare("UPDATE articles SET is_delete=1 WHERE id=:id");
       $stmt->bindParam(':id', $id, PDO::PARAM_INT);
