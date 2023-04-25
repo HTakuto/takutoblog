@@ -4,8 +4,16 @@
   include 'lib/queryArticle.php';
   include 'lib/article.php';
 
+  $limit = 10; 
+  $page = 1;
+
+  // ページ数の決定
+  if (!empty($_GET['page']) && intval($_GET['page']) > 0){ 
+    $page = intval($_GET['page']);
+  }
+
   $queryArticle = new QueryArticle();
-  $articles = $queryArticle->findAll();
+  $pager = $queryArticle->getPager($page, $limit);
 ?>
 <!doctype html>
 <html lang="ja">
@@ -52,7 +60,7 @@
 
       <h1>記事一覧</h1>
 
-<?php if ($articles): ?>
+<?php if ($pager['articles']): ?>
       <table class="table table-bordered">
         <thead>
           <tr>
@@ -67,7 +75,7 @@
           </tr>
         </thead>
         <tbody>
-<?php foreach ($articles as $article): ?>
+<?php foreach ($pager['articles'] as $article): ?>
           <tr>
             <td><?php echo $article->getId() ?></td>
             <td><?php echo $article->getTitle() ?></td>
@@ -87,6 +95,16 @@
       </div>
 <?php endif ?>
 
+<!-- ページャー -->
+<?php if (!empty($pager['total'])): ?>
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+  <?php for ($i = 1; $i <= ceil($pager['total'] / $limit); $i++): ?>
+          <li class="page-item"><a class="page-link" href="backend.php?page=<?php echo $i ?>"><?php echo $i ?></a></li>
+  <?php endfor ?>
+        </ul>
+      </nav>
+<?php endif ?>
       </div>
 
     </div><!-- /.row -->

@@ -3,15 +3,23 @@
   include 'lib/queryArticle.php';
   include 'lib/article.php';
 
+  $limit = 5;
+  $page = 1;
+
+  // ページ数の決定
+  if (!empty($_GET['page']) && intval($_GET['page']) > 0){ 
+    $page = intval($_GET['page']);
+  }
+
   $queryArticle = new QueryArticle();
-  $articles = $queryArticle->findAll();
+  $pager = $queryArticle->getPager($page, $limit);
 ?>
 <!doctype html>
 <html lang="ja">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TakutoBlog.</title>
+    <title>TakutoBlog</title>
 
     <!-- Bootstrap core CSS -->
     <link href="./css/bootstrap.min.css" rel="stylesheet">
@@ -42,7 +50,7 @@
 
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
   <div class="container">
-    <a class="navbar-brand" href="/blog/">TakutoBlog.</a>
+    <a class="navbar-brand" href="/takutoblog/">TakutoBlog.</a>
   </div>
 </nav>
 
@@ -50,8 +58,8 @@
   <div class="row">
     <div class="col-md-8">
 
-    <?php if ($articles): ?>
-    <?php foreach ($articles as $article): ?>
+    <?php if ($pager['articles']): ?>
+    <?php foreach ($pager['articles'] as $article): ?>
         <article class="blog-post">
           <h2 class="blog-post-title">
             <a href="view.php?id=<?php echo $article->getId() ?>">
@@ -67,7 +75,15 @@
             <p>記事はありません。</p>
           </div>
     <?php endif ?>
-
+    <?php if (!empty($pager['total'])): ?>
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+    <?php for ($i = 1; $i <= ceil($pager['total'] / $limit); $i++): ?>
+          <li class="page-item"><a class="page-link" href="index.php?page=<?php echo $i ?>"><?php echo $i ?></a></li>
+    <?php endfor ?>
+        </ul>
+      </nav>
+    <?php endif ?>
     </div>
 
     <div class="col-md-4">

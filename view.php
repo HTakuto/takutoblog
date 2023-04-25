@@ -18,7 +18,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TakutoBlog.</title>
+    <title>TakutoBlog</title>
 
     <!-- Bootstrap core CSS -->
     <link href="./css/bootstrap.min.css" rel="stylesheet">
@@ -49,7 +49,7 @@
 
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
   <div class="container">
-    <a class="navbar-brand" href="/blog/">TakutoBlog.</a>
+    <a class="navbar-brand" href="/takutoblog/">TakutoBlog.</a>
   </div>
 </nav>
 
