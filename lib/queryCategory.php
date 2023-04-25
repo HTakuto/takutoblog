@@ -27,6 +27,16 @@ class QueryCategory extends connect{
     $stmt->execute();
   }
 
+  public function delete(){
+    $id = $this->category->getId();
+    $stmt = $this->dbh->prepare("UPDATE articles SET category_id = NULL WHERE category_id=:id");
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+    $stmt = $this->dbh->prepare("DELETE FROM categories WHERE id=:id");
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+  }
+
   public function find($id){
     $stmt = $this->dbh->prepare("SELECT * FROM categories WHERE id=:id");
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -64,6 +74,13 @@ class Category{
     $queryCategory->setCategory($this);
     $queryCategory->save();
   }
+
+  public function delete(){
+    $queryCategory = new QueryCategory();
+    $queryCategory->setCategory($this);
+    $queryCategory->delete();
+  }
+
   
   public function getId(){
     return $this->id;
