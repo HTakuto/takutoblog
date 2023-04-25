@@ -38,6 +38,17 @@
         user-select: none;
       }
 
+      div.p-4.mb-3.bg-light.rounded {
+        text-align: center; /* imgの親要素を中央揃えにする */
+      }
+
+      /* アイコン画像を○の形にし、サイズを修正する */
+      div.p-4.mb-3.bg-light.rounded img {
+        border-radius: 50%; /* 正円に近い形状にする */
+        width: 100px; /* 幅を100ピクセルにする */
+        height: 100px; /* 高さを100ピクセルにする */
+      }
+
       @media (min-width: 768px) {
         .bd-placeholder-img-lg {
           font-size: 3.5rem;
@@ -83,8 +94,11 @@
 
     <div class="col-md-4">
       <div class="p-4 mb-3 bg-light rounded">
-        <h4>ブログについて</h4>
-        <p class="mb-0">毎日のなんてことない日常を書いていきます。</p>
+        <img src="Takutoicon.jpg" alt="アイコン画像">
+        <br>
+        <br>
+        <h4>Takuto</h4>
+        <p class="mb-0">PHPが得意なエンジニアです。</p>
       </div>
 
       <div class="p-4">
