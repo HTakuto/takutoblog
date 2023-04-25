@@ -59,6 +59,7 @@
             <th>ID</th>
             <th>タイトル</th>
             <th>本文</th>
+            <th>画像</th>
             <th>作成日</th>
             <th>更新日</th>
             <th>編集</th>
@@ -70,6 +71,7 @@
             <td><?php echo $article->getId() ?></td>
             <td><?php echo $article->getTitle() ?></td>
             <td><?php echo $article->getBody() ?></td>
+            <td><?php echo $article->getFilename()? '<img src="./album/thumbs-'.$article->getFilename().'">': 'なし' ?></td>
             <td><?php echo $article->getCreatedAt() ?></td>
             <td><?php echo $article->getUpdatedAt() ?></td>
             <td><a href="edit.php?id=<?php echo $article->getId() ?>" class="btn btn-success">編集</a></td>
