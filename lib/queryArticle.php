@@ -78,6 +78,7 @@ class QueryArticle extends connect{
     $title = $this->article->getTitle();
     $body = $this->article->getBody();
     $filename = $this->article->getFilename();
+    $category_id = $this->article->getCategoryId();
 
     if ($this->article->getId()){
       // IDがあるときは上書き
@@ -91,25 +92,22 @@ class QueryArticle extends connect{
         $filename = $this->article->getFilename();
       }
       $stmt = $this->dbh->prepare("UPDATE articles
-      SET title=:title, body=:body, filename=:filename, updated_at=NOW()
+      SET title=:title, body=:body, filename=:filename, category_id=:category_id, updated_at=NOW()
       WHERE id=:id");
-      $stmt->bindParam(':title', $title, PDO::PARAM_STR);
-      $stmt->bindParam(':body', $body, PDO::PARAM_STR);
-      $stmt->bindParam(':filename', $filename, PDO::PARAM_STR);
       $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-      $stmt->execute();
     } else {
       // IDがなければ新規作成
       if ($file = $this->article->getFile()){
         $this->article->setFilename($this->saveFile($file['tmp_name']));
         $filename = $this->article->getFilename();
       }
-      $stmt = $this->dbh->prepare("INSERT INTO articles (title, body, filename, created_at, updated_at)
-                VALUES (:title, :body, :filename, NOW(), NOW())");
-      $stmt->bindParam(':title', $title, PDO::PARAM_STR);
-      $stmt->bindParam(':body', $body, PDO::PARAM_STR);
-      $stmt->bindParam(':filename', $filename, PDO::PARAM_STR);
-      $stmt->execute();
+      $stmt = $this->dbh->prepare("INSERT INTO articles (title, body, filename, category_id, created_at, updated_at)
+      VALUES (:title, :body, :filename, :category_id, NOW(), NOW())");
+       $stmt->bindParam(':title', $title, PDO::PARAM_STR);
+       $stmt->bindParam(':body', $body, PDO::PARAM_STR);
+       $stmt->bindParam(':filename', $filename, PDO::PARAM_STR);
+       $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
+       $stmt->execute();
     }
   }
 
@@ -147,9 +145,9 @@ class QueryArticle extends connect{
     return $articles;
   }
 
-  public function getPager($page = 1, $limit = 10, $month = null){
-    $page = ($page - 1) * $limit;  // LIMIT x, y：開始ページ数は0から
-    $pager = array('total' => null, 'articles' => null);
+  public function getPager($page = 1, $limit = 10, $month = null, $category_id = null){
+    $page = ($page - 1) * $limit;  // LIMIT x, y：開始ページ数は0から 
+    $start = array('total' => null, 'articles' => null);
 
     // 月指定があれば「2021-01%」のように検索できるよう末尾に追加
     if ($month){
@@ -157,28 +155,37 @@ class QueryArticle extends connect{
     }   
 
     // 総記事数
+    // ベースSQL
+    $sql = "SELECT COUNT(*) FROM articles WHERE is_delete=0";
     if ($month){
-      $stmt = $this->dbh->prepare("SELECT COUNT(*) FROM articles WHERE is_delete=0 AND created_at LIKE :month"); 
+      $stmt = $this->dbh->prepare($sql." AND created_at LIKE :month");
       $stmt->bindParam(':month', $month, PDO::PARAM_STR);
+    } else if($category_id === 0){
+      $stmt = $this->dbh->prepare($sql." AND category_id IS NULL");
+    } else if($category_id){
+      $stmt = $this->dbh->prepare($sql." AND category_id=:category_id");
+      $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
     } else {
-      $stmt = $this->dbh->prepare("SELECT COUNT(*) FROM articles WHERE is_delete=0");
-    }   
+      $stmt = $this->dbh->prepare($sql);
+    }
     $stmt->execute();
     $pager['total'] = $stmt->fetchColumn();
 
     // 表示するデータ
+    // ベースSQL
+    $sql = "SELECT * FROM articles WHERE is_delete=0 ";
+    $orderBy = "ORDER BY created_at DESC LIMIT :start, :limit";
     if ($month){
-      $stmt = $this->dbh->prepare("SELECT * FROM articles
-        WHERE is_delete=0 AND created_at LIKE :month
-        ORDER BY created_at DESC
-        LIMIT :start, :limit");
+      $stmt = $this->dbh->prepare($sql." AND created_at LIKE :month ".$orderBy);
       $stmt->bindParam(':month', $month, PDO::PARAM_STR);
+    } else if ($category_id === 0){
+      $stmt = $this->dbh->prepare($sql." AND category_id IS NULL ".$orderBy);
+    } else if ($category_id){
+      $stmt = $this->dbh->prepare($sql." AND category_id=:category_id ".$orderBy);
+      $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
     } else {
-      $stmt = $this->dbh->prepare("SELECT * FROM articles
-        WHERE is_delete=0
-        ORDER BY created_at DESC
-        LIMIT :start, :limit");
-    }   
+      $stmt = $this->dbh->prepare($sql.$orderBy);
+    }
     $stmt->bindParam(':start', $page, PDO::PARAM_INT);
     $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
     $stmt->execute();
@@ -209,6 +216,7 @@ class QueryArticle extends connect{
       $article->setTitle($result['title']);
       $article->setBody($result['body']);
       $article->setFilename($result['filename']);
+      $article->setCategoryId($result['category_id']);
       $article->setCreatedAt($result['created_at']);
       $article->setUpdatedAt($result['updated_at']);
       $articles[] = $article;
