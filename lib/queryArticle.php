@@ -147,21 +147,39 @@ class QueryArticle extends connect{
     return $articles;
   }
 
-  public function getPager($page = 1, $limit = 10){
-    $start = ($page - 1) * $limit;  // LIMIT x, y：1ページ目を表示するとき、xは0になる
+  public function getPager($page = 1, $limit = 10, $month = null){
+    $page = ($page - 1) * $limit;  // LIMIT x, y：開始ページ数は0から
     $pager = array('total' => null, 'articles' => null);
 
+    // 月指定があれば「2021-01%」のように検索できるよう末尾に追加
+    if ($month){
+      $month .= '%';
+    }   
+
     // 総記事数
-    $stmt = $this->dbh->prepare("SELECT COUNT(*) FROM articles WHERE is_delete=0");
+    if ($month){
+      $stmt = $this->dbh->prepare("SELECT COUNT(*) FROM articles WHERE is_delete=0 AND created_at LIKE :month"); 
+      $stmt->bindParam(':month', $month, PDO::PARAM_STR);
+    } else {
+      $stmt = $this->dbh->prepare("SELECT COUNT(*) FROM articles WHERE is_delete=0");
+    }   
     $stmt->execute();
     $pager['total'] = $stmt->fetchColumn();
 
     // 表示するデータ
-    $stmt = $this->dbh->prepare("SELECT * FROM articles
-      WHERE is_delete=0
-      ORDER BY created_at DESC
-      LIMIT :start, :limit");
-    $stmt->bindParam(':start', $start, PDO::PARAM_INT);
+    if ($month){
+      $stmt = $this->dbh->prepare("SELECT * FROM articles
+        WHERE is_delete=0 AND created_at LIKE :month
+        ORDER BY created_at DESC
+        LIMIT :start, :limit");
+      $stmt->bindParam(':month', $month, PDO::PARAM_STR);
+    } else {
+      $stmt = $this->dbh->prepare("SELECT * FROM articles
+        WHERE is_delete=0
+        ORDER BY created_at DESC
+        LIMIT :start, :limit");
+    }   
+    $stmt->bindParam(':start', $page, PDO::PARAM_INT);
     $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
     $stmt->execute();
     $pager['articles'] = $this->getArticles($stmt->fetchAll(PDO::FETCH_ASSOC));
