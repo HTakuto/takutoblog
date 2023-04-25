@@ -168,6 +168,21 @@ class QueryArticle extends connect{
     return $pager;
   }
 
+  public function getMonthlyArchiveMenu(){
+    $stmt = $this->dbh->prepare("
+      SELECT DATE_FORMAT(created_at, '%Y-%m') AS month_menu, COUNT(*) AS count
+      FROM articles
+      WHERE is_delete = 0
+      GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+      ORDER BY month_menu DESC");
+    $stmt->execute();
+    $return = array();
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+      $return[] = array('month' => $row['month_menu'], 'count' => $row['count']);
+    }
+    return $return;
+  }
+
   private function getArticles($results){
     $articles = array();
     foreach ($results as $result){
