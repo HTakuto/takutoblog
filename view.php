@@ -43,7 +43,7 @@
       }
 
       /* アイコン画像を○の形にし、サイズを修正する */
-      img {
+      div.p-4.mb-3.bg-light.rounded img {
         border-radius: 50%; /* 正円に近い形状にする */
         width: 100px; /* 幅を100ピクセルにする */
         height: 100px; /* 高さを100ピクセルにする */
