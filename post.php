@@ -17,6 +17,9 @@
     $article = new Article();
     $article->setTitle($title);
     $article->setBody($body);
+    if (isset($_FILES['image']) && is_uploaded_file($_FILES['image']['tmp_name'])){ 
+      $article->setFile($_FILES['image']);
+    }
     $article->save();
 
     header('Location: backend.php');
